@@ -73,7 +73,13 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=DEBUG_LEVEL)
 session = None
 try:
     if USB:
-        session = frida.get_usb_device().attach(APP_NAME)
+        device = frida.get_usb_device(1)
+        pid = None
+        for a in device.enumerate_applications():
+            if a.identifier == APP_NAME:
+                pid = a.pid
+                break
+        session = device.attach(pid)
     elif DEVICE:
         session = frida.get_device(DEVICE).attach(APP_NAME)
     else:
